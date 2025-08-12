@@ -33,6 +33,21 @@ Following, I proceed to describe the solution we came with:
 
 ### New Solution Based on the AI Evaluation
 
+graph TD
+    A[React Client] -- "1. Request Upload URL<br/>(with filename, filetype)" --> C[AWS Lambda];
+    C -- "2. Generate Presigned URL" --> D{S3 Bucket};
+    C -- "3. Return Presigned URL" --> A;
+    A -- "4. Upload File Directly<br/>(using the special URL)" --> D;
+    D -- "5. Trigger Notification<br/>(on object creation)" --> F[Another AWS Lambda];
+    F -- "6. Store File URL/Key" --> E[Database];
+
+    subgraph "AWS"
+      C;
+      D;
+      F;
+      E[Database];
+    end
+
 - Request an Upload Link to the Lambda Function directly from the client-side.
 - The Lambda Function will receive this request and trigger the S3 bucket with a Request through the AWS SDK.
 - The S3 has the ability to generate a presigned URL.

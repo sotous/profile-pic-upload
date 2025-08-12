@@ -1,0 +1,56 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: sotous
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: image-upload
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: profile-pic-upload
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  profile: profile-pic-upload
+  stage: dev
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+          Resource:
+            - arn:aws:s3:::${self:custom.bucketName}/*
+
+custom:
+  bucketName: ${self:service}-${self:provider.stage}-profile-pics
+
+functions:
+  profilePicUpload:
+    handler: handler.profilePicUpload
+    environment:
+      BUCKET_NAME: ${self:custom.bucketName}
+    events:
+      - httpApi:
+          path: /
+          method: post
+  corsHandler:
+    handler: handler.corsHandler
+    events:
+      - httpApi:
+          path: /
+          method: options
+
+resources:
+  Resources:
+    ProfilePicBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - PUT
+                - GET
+              AllowedOrigins:
+                - '*' # In production, you should lock this down to your client's domain
+              MaxAge: 3000

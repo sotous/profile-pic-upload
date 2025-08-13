@@ -33,6 +33,7 @@ Following, I proceed to describe the solution we came with:
 
 ### New Solution Based on the AI Evaluation
 
+```mermaid
 graph TD
     A[React Client] -- "(1) Request Upload URL<br/>(with filename, filetype)" --> C[AWS Lambda];
     C -- "(2) Generate Presigned URL" --> D{S3 Bucket};
@@ -47,6 +48,7 @@ graph TD
       F;
       E[Database];
     end
+```
 
 - Request an Upload Link to the Lambda Function directly from the client-side.
 - The Lambda Function will receive this request and trigger the S3 bucket with a Request through the AWS SDK.

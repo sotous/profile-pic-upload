@@ -1,7 +1,9 @@
+useDotenv: true
+
 # "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: sotous
+org: ${env:SLS_ORG}
 # "app" enables Serverless Framework Dashboard features and sharing them with other Services.
-app: image-upload
+app: ${env:SLS_APP}
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: profile-pic-upload
 
@@ -9,7 +11,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   profile: profile-pic-upload
-  stage: dev
+  stage: ${env:SLS_STAGE, 'dev'}
   iam:
     role:
       statements:
